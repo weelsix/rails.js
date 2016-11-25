@@ -1,6 +1,6 @@
 class Rails {
 	constructor() {
-		console.log('hooray');
+		console.log('Creating a new rails');
 	}
 }
 
