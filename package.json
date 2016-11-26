@@ -1,0 +1,24 @@
+{
+  "name": "rails",
+  "version": "1.0.0",
+  "description": "An easy to use, indipendent, home-made javascript utility library to route your single page application.",
+  "main": "rails.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/borradaniele/rails.js.git"
+  },
+  "keywords": [
+    "rails",
+    "path",
+    "router"
+  ],
+  "author": "Andrea Gottardi and Borra Daniele",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/borradaniele/rails.js/issues"
+  },
+  "homepage": "https://github.com/borradaniele/rails.js#readme"
+}
