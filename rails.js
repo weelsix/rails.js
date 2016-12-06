@@ -31,15 +31,20 @@ class Rails {
 		var domain = parts[2];
 		var port = parts[3];
 		var page = parts[4];
-		console.log(parts);
-		if( this.registered.indexOf(page) > 0 )
+		var found = false;
+		this.registered.forEach( element => { if( element.path == page ) found = element; } );
+		if( found )
 			window.history.pushState({ url: page }, page.toUpperCase(), page);
 		else
 			throw "Loading a non registered path";
 	}
 
 	registerPath( path ) {
-		this.registered.push( path );
+		var page = new Page();
+		this.registered.push( {
+			path: path,
+			page: page
+		} );
 	}
 
 	handleAnchors() {
@@ -57,6 +62,12 @@ class Rails {
 	handleClick( self, event ) {
 		event.preventDefault();
 		self.go( event.target.href );
+	}
+}
+
+class Page {
+	contruct() {
+		// Set up the page here
 	}
 }
 
