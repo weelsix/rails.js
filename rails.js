@@ -1,6 +1,10 @@
 class Rails {
 	constructor( paths, options, callback ) {
-		// Setup all the rails proprieties
+		// Native proprieties
+		this.container = null;
+		this.registered = [];
+
+		// Proprieties from parameters
 		this.manageAnchors = options.manageAnchors || true;
 		this.contentSelector = options.contentSelector || '#rails-page';
 
@@ -18,23 +22,35 @@ class Rails {
 		typeof callback == 'function' && callback();
 	}
 
-	go( to ) {
+	go( destination ) {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		window.history.pushState({ url: to }, to.toUpperCase(), to);
+		var parts = destination.match(/(http|https):\/\/(.*):(.*)\/(.*)/i);
+		var protocol = parts[1];
+		var domain = parts[2];
+		var port = parts[3];
+		var page = parts[4];
+		console.log(parts);
+		if( this.registered.indexOf(page) > 0 )
+			window.history.pushState({ url: page }, page.toUpperCase(), page);
+		else
+			throw "Loading a non registered path";
+	}
+
+	registerPath( path ) {
+		this.registered.push( path );
 	}
 
 	handleAnchors() {
 		// This will be called every time we put content in the page
 		var anchors = document.querySelectorAll('a');
-		var self = this;
 		for (var i = 0; i < anchors.length; i++) {
 			var anchor = anchors[i];
 			// According to documentation is not necessary to remove
 			// duplicated event listeners
 			// anchor.removeEventListener('click', this.navigate);
-			anchor.addEventListener('click', (event) => { this.handleClick(self, event); }, false);
+			anchor.addEventListener('click', (event) => { this.handleClick(this, event); }, false);
 		}
 	}
 
