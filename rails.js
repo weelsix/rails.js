@@ -1,3 +1,5 @@
+var request = require('ajax-request');
+
 class Rails {
 	constructor( paths, options, callback ) {
 		// Native proprieties
@@ -66,8 +68,24 @@ class Rails {
 }
 
 class Page {
-	contruct() {
-		// Set up the page here
+	contruct( file ) {
+		// Get the file path for the html to laod
+		this.file = file;
+	}
+
+	loadPage() {
+		request({
+			url: this.file,
+			method: 'GET'
+		}, (error, response, body) => {
+			console.log(error);
+			console.log(response);
+			console.log(body);
+		});
+	}
+
+	animateIn() {
+		// Fancy animation for getting the page in here
 	}
 }
 

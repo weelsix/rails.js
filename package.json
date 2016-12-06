@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/borradaniele/rails.js/issues"
   },
-  "homepage": "https://github.com/borradaniele/rails.js#readme"
+  "homepage": "https://github.com/borradaniele/rails.js#readme",
+  "dependencies": {
+    "ajax-request": "^1.2.1"
+  }
 }
