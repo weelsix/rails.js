@@ -11,11 +11,13 @@ class Rails {
 		this.contentSelector = options.contentSelector || '#rails-page';
 		this.baseDirectory = options.baseDirectory || '/pages/';
 		this.baseExtension = options.baseExtension || '.html';
+		this.managePopState = options.managePopState || true;
 
 		// Perform all the required tasks in options
 		// or setup variables
 		this.container = document.querySelectorAll( this.contentSelector )[0];
 		this.manageAnchors && this.handleAnchors();
+		this.managePopState && this.handlePopstate();
 
 		// Register a path for each path in paths
 		paths.forEach((current, index) => {
@@ -32,19 +34,32 @@ class Rails {
 		typeof callback == 'function' && callback();
 	}
 
-	go( destination ) {
+	go( destination, addState ) {
+		// Determinate if to add a stete to history or not
+		// needed to fix navigation history
+		if (typeof addState == 'undefined') addState = true;
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
+		var protocol = false;
+		var domain = false;
+		var port = false;
+		var page = false;
 		var parts = destination.match(/(http|https):\/\/(.*):(.*)\/(.*)/i);
-		var protocol = parts[1];
-		var domain = parts[2];
-		var port = parts[3];
-		var page = parts[4];
+		if( parts ) {
+			// In this case the url contain full uri string
+			protocol = parts[1];
+			domain = parts[2];
+			port = parts[3];
+			page = parts[4];
+		} else {
+			// In this case the url probably came from popstate
+			page = destination;
+		}
 		var found = false;
 		this.registered.forEach( element => { if( element.path == page ) found = element; } );
 		if( found ) {
-			window.history.pushState({ url: page }, page.toUpperCase(), page);
+			addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
 			found.page.loadPage();
 		} else
 			throw "Loading a non registered path";
@@ -77,6 +92,14 @@ class Rails {
 	handleClick( self, event ) {
 		event.preventDefault();
 		self.go( event.target.href );
+	}
+
+	handlePopstate() {
+		window.onpopstate = (event) => {
+			// If state is not set, this entry is not handled by rails
+			if ( event.state ) this.go( event.state.location, false );
+			else this.go( this.registered[0].path, false );
+		}
 	}
 }
 
@@ -115,4 +138,4 @@ class Page {
 	}
 }
 
-export default Rails;
+export {Rails, Page};
