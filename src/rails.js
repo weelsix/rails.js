@@ -1,10 +1,11 @@
 var request = require('ajax-request');
 
 class Rails {
-	constructor( paths, options, callback ) {
+	constructor( options, callback ) {
 		// Native proprieties
 		this.container = null;
 		this.registered = [];
+		this.activePage = null;
 
 		// Proprieties from parameters
 		this.manageAnchors = options.manageAnchors || true;
@@ -16,22 +17,21 @@ class Rails {
 		// Perform all the required tasks in options
 		// or setup variables
 		this.container = document.querySelectorAll( this.contentSelector )[0];
+		if (!this.container) throw 'No valid container';
 		this.manageAnchors && this.handleAnchors();
 		this.managePopState && this.handlePopstate();
 
-		// Register a path for each path in paths
-		paths.forEach((current, index) => {
-			if (typeof current == 'object') {
-				if (typeof current.path == 'undefined') throw "No propriety path in object";
-				if (typeof current.page == 'undefined') throw "No propriety page in object";
-				this.registerPath( current.path, current.page );
-			}
-			if (typeof current == 'string') {
-				this.registerPath( current );
-			}
-		} );
-
 		typeof callback == 'function' && callback();
+	}
+
+	init( paths ) {
+		// Register a path for each path in paths
+		if (typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
+		paths.forEach((current, index) => {
+			if (typeof current === 'object') this.registerPath( current );
+			else throw 'Unable to register a non-object page';
+		} );
+		this.go( paths[0].namespace );
 	}
 
 	go( destination, addState ) {
@@ -56,25 +56,33 @@ class Rails {
 			// In this case the url probably came from popstate
 			page = destination;
 		}
+		// Now let's look for the registered page to load
 		var found = false;
-		this.registered.forEach( element => { if( element.path == page ) found = element; } );
+		this.registered.forEach( element => { if( element.namespace == page ) found = element; } );
 		if( found ) {
 			addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
-			found.page.loadPage();
+			this.activePage = found;
+			// Let's make the ajax request for the file stored in the page
+			request({
+				url: this.baseDirectory + found.namespace + this.baseExtension,
+				method: 'GET',
+				headers: {
+					'x-rails': 'true'
+				}
+			}, (error, response, body) => {
+				if( error ) throw error;
+				else {
+					this.container.innerHTML = body;
+					// Perform animations and stuff
+				}
+			});
 		} else
-			throw "Loading a non registered path";
+			throw 'Loading a non register path';
 	}
 
-	registerPath( path, page ) {
-		if( !page ) {
-			var pageref = new Page( this.baseDirectory + path + this.baseExtension, this );
-		} else {
-			var pageref = page;
-		}
-		this.registered.push( {
-			path: path,
-			page: pageref
-		} );
+	registerPath( page ) {
+		if(typeof page === 'undefined') throw 'Cannot register undefined page';
+		else this.registered.push( page );
 	}
 
 	handleAnchors() {
@@ -96,46 +104,34 @@ class Rails {
 
 	handlePopstate() {
 		window.onpopstate = (event) => {
-			// If state is not set, this entry is not handled by rails
+			// If state is not set, this entry is not handled by rails,
+			// so let's do nothing and go to the first registered path
 			if ( event.state ) this.go( event.state.location, false );
-			else this.go( this.registered[0].path, false );
+			else this.go( this.registered[0].namespace );
 		}
 	}
 }
 
-class Page {
-	constructor( file, rails ) {
-		if( typeof file == 'undefined' ) throw "Undefined file propriety";
-		if( typeof rails == 'undefined' ) throw "Undefined rails instance";
-		// Get the file path for the html to laod
-		this.file = file;
-		// Rails param is the reference to the rails instance
-		// witch the page belongs to
-		this.rails = rails;
+class RailsPage {
+	constructor() {
+		// Empty constructor
 	}
 
-	loadPage() {
-		request({
-			url: this.file,
-			method: 'GET'
-		}, (error, response, body) => {
-			if( error ) throw error;
-			this.rails.container.innerHTML = body;
-		});
+	onEnter() {
+		// Animazione per l'ingresso della pagina
 	}
 
-	animateIn() {
-		// Fancy animation for getting the page in here
+	onEnterComplete() {
+		// Dopo che è animazione fatta e caricta
 	}
 
-	animateOut() {
-		// Fany animation out here
+	onLeave() {
+		// Animazione di uscita
 	}
 
-	remove() {
-		// Remove the page HTML from the rails container
-		this.rails.container.innerHTML = '';
+	onLeaveComplete() {
+		// Callback di rimozione avvenuta con successo
 	}
 }
 
-export {Rails, Page};
+export {Rails, RailsPage};
