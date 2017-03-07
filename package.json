@@ -1,5 +1,5 @@
 {
-  "name": "rails",
+  "name": "rails-js",
   "version": "0.1.0",
   "description": "An easy to use, indipendent, home-made javascript utility library to route your single page application.",
   "main": "./src/rails.js",
@@ -12,6 +12,8 @@
   },
   "keywords": [
     "rails",
+	"frontend",
+	"js router",
     "path",
     "router"
   ],
