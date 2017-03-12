@@ -60,22 +60,37 @@ class Rails {
 		var found = false;
 		this.registered.forEach( element => { if( element.namespace == page ) found = element; } );
 		if( found ) {
+			// Let's create a load promise
+			var loadPromise = new Promise(( resolve, reject ) => {
+				// Let's make the ajax request for the file stored in the page
+				request({
+					url: this.baseDirectory + found.namespace + this.baseExtension,
+					method: 'GET',
+					headers: {
+						'x-rails': 'true'
+					}
+				}, (error, response, body) => {
+					if( error ) {
+						throw error;
+						reject();
+					}
+					else {
+						var toAppend = '';
+						toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
+						toAppend += body;
+						toAppend += '</div>';
+						this.container.innerHTML = toAppend;
+						found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
+						resolve();
+					}
+				});
+			});
+
+			// Animate out the old page, if there is one 'cause maiby it's the first load
+			if( this.activePage ) this.activePage.onLeave( loadPromise );
 			addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
 			this.activePage = found;
-			// Let's make the ajax request for the file stored in the page
-			request({
-				url: this.baseDirectory + found.namespace + this.baseExtension,
-				method: 'GET',
-				headers: {
-					'x-rails': 'true'
-				}
-			}, (error, response, body) => {
-				if( error ) throw error;
-				else {
-					this.container.innerHTML = body;
-					// Perform animations and stuff
-				}
-			});
+			this.activePage.onEnter( loadPromise );
 		} else
 			throw 'Loading a non register path';
 	}
@@ -115,6 +130,7 @@ class Rails {
 class RailsPage {
 	constructor() {
 		// Empty constructor
+		this.view = null;
 	}
 
 	onEnter() {
