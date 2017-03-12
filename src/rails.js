@@ -79,7 +79,7 @@ class Rails {
 						toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
 						toAppend += body;
 						toAppend += '</div>';
-						this.container.innerHTML = toAppend;
+						this.container.innerHTML += toAppend;
 						found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
 						resolve();
 					}
