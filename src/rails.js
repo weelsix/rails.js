@@ -137,16 +137,8 @@ class RailsPage {
 		// Animazione per l'ingresso della pagina
 	}
 
-	onEnterComplete() {
-		// Dopo che è animazione fatta e caricta
-	}
-
 	onLeave() {
 		// Animazione di uscita
-	}
-
-	onLeaveComplete() {
-		// Callback di rimozione avvenuta con successo
 	}
 }
 
