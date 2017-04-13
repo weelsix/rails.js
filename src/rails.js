@@ -142,4 +142,7 @@ class RailsPage {
 	}
 }
 
-export {Rails, RailsPage};
+module.exports = {
+	Rails: Rails,
+	RailsPage: RailsPage
+};
