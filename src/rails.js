@@ -6,6 +6,7 @@ class Rails {
 		this.activePage = null;
 
 		// Proprieties from parameters
+		options = options || { };
 		this.manageAnchors = options.manageAnchors || true;
 		this.contentSelector = options.contentSelector || '#rails-page';
 		this.baseDirectory = options.baseDirectory || '/pages/';
