@@ -70,18 +70,17 @@ class Rails {
 				})
 				.then((response) => { return response.text(); } )
 				.then(( parsed ) => {
-					if( error ) {
-						throw error;
-						reject();
-					} else {
-						var toAppend = '';
-						toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
-						toAppend += body;
-						toAppend += '</div>';
-						this.container.innerHTML += toAppend;
-						found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
-						resolve();
-					}
+					var toAppend = '';
+					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
+					toAppend += body;
+					toAppend += '</div>';
+					this.container.innerHTML += toAppend;
+					found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
+					resolve();
+				})
+				.catch((error) => {
+					throw error;
+					reject();
 				});
 			});
 
