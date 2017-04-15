@@ -30,7 +30,13 @@ class Rails {
 			if (typeof current === 'object') this.registerPath( current );
 			else throw 'Unable to register a non-object page';
 		} );
-		this.go( paths[0].namespace );
+		// Then navigate to the setted url location when called init, if none navigate to the first registered
+		var parts = document.location.href.match(/(http|https):\/\/(.*):(.*)\/(.*)/i);
+		if( typeof parts[4] !== 'undefined' && parts[4].length > 1 ) {
+			this.go( parts[4] );
+		} else {
+			this.go( paths[0].namespace );
+		}
 	}
 
 	go( destination, addState ) {
