@@ -61,7 +61,7 @@ class Rails {
 			// Let's create a load promise
 			var loadPromise = new Promise(( resolve, reject ) => {
 				// Let's make the ajax request for the file stored in the page
-				let url =this.baseDirectory + found.namespace + this.baseExtension;
+				let url = this.baseDirectory + found.namespace + this.baseExtension;
 				window.fetch(url, {
 					method: 'get',
 					headers: {
@@ -130,6 +130,7 @@ class RailsPage {
 	constructor() {
 		// Empty constructor
 		this.view = null;
+		this.namespace = '';
 	}
 
 	onEnter() {
