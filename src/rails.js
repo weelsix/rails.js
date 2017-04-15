@@ -72,7 +72,7 @@ class Rails {
 				.then(( parsed ) => {
 					var toAppend = '';
 					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
-					toAppend += body;
+					toAppend += parsed;
 					toAppend += '</div>';
 					this.container.innerHTML += toAppend;
 					found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
