@@ -1,5 +1,3 @@
-var request = require('ajax-request');
-
 class Rails {
 	constructor( options, callback ) {
 		// Native proprieties
@@ -63,18 +61,19 @@ class Rails {
 			// Let's create a load promise
 			var loadPromise = new Promise(( resolve, reject ) => {
 				// Let's make the ajax request for the file stored in the page
-				request({
-					url: this.baseDirectory + found.namespace + this.baseExtension,
-					method: 'GET',
+				let url =this.baseDirectory + found.namespace + this.baseExtension;
+				window.fetch(url, {
+					method: 'get',
 					headers: {
 						'x-rails': 'true'
 					}
-				}, (error, response, body) => {
+				})
+				.then((response) => { return response.text(); } )
+				.then(( parsed ) => {
 					if( error ) {
 						throw error;
 						reject();
-					}
-					else {
+					} else {
 						var toAppend = '';
 						toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
 						toAppend += body;

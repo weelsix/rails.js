@@ -1,6 +1,6 @@
 {
   "name": "rails-js",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "An easy to use, indipendent, home-made javascript utility library to route your single page application.",
   "main": "./src/rails.js",
   "scripts": {
@@ -12,8 +12,8 @@
   },
   "keywords": [
     "rails",
-	"frontend",
-	"js router",
+    "frontend",
+    "js router",
     "path",
     "router"
   ],
@@ -23,7 +23,5 @@
     "url": "https://github.com/borradaniele/rails.js/issues"
   },
   "homepage": "https://github.com/borradaniele/rails.js#readme",
-  "dependencies": {
-    "ajax-request": "^1.2.1"
-  }
+  "dependencies": {}
 }
