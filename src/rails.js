@@ -65,7 +65,14 @@ class Rails {
 		var found = false;
 		this.registered.forEach( element => { if( element.namespace == page ) found = element; } );
 		if( found ) {
-			// Let's create a load promise
+			// The onleave method must return a promise resolved on animation complete
+			if( this.activePage ) {
+				var outPromise = this.activePage.onLeave();
+			} else {
+				// If this is the first load there is no active page, promise resolved
+				var outPromise = new Promise((resolve) => { resolve(); });
+			}
+			// And we also create a load promise
 			var loadPromise = new Promise(( resolve, reject ) => {
 				// Let's make the ajax request for the file stored in the page
 				let url = this.baseDirectory + found.namespace + this.baseExtension;
@@ -81,21 +88,28 @@ class Rails {
 					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
 					toAppend += parsed;
 					toAppend += '</div>';
-					this.container.innerHTML += toAppend;
-					found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
-					resolve();
+					resolve( toAppend );
 				})
 				.catch((error) => {
 					throw error;
 					reject();
 				});
 			});
-
-			// Animate out the old page, if there is one 'cause maiby it's the first load
-			if( this.activePage ) this.activePage.onLeave( loadPromise );
-			addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
-			this.activePage = found;
-			this.activePage.onEnter( loadPromise );
+			// Data are loaded and out animation is performed
+			Promise.all([outPromise, loadPromise])
+			.then((values) => {
+				// Append loaded HTML
+				this.container.innerHTML += values[1];
+				// Set the current view
+				found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
+				// Add the popstate, set active page and start in animation
+				addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
+				this.activePage = found;
+				this.activePage.onEnter();
+			})
+			.catch((error) => {
+				throw error;
+			});
 		} else
 			throw 'Loading a non register path';
 	}
