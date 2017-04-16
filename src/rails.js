@@ -73,39 +73,34 @@ class Rails {
 				var outPromise = new Promise((resolve) => { resolve(); });
 			}
 			// And we also create a load promise
-			var loadPromise = new Promise(( resolve, reject ) => {
-				// Let's make the ajax request for the file stored in the page
-				let url = this.baseDirectory + found.namespace + this.baseExtension;
-				window.fetch(url, {
-					method: 'get',
-					headers: {
-						'x-rails': 'true'
-					}
-				})
-				.then((response) => { return response.text(); } )
-				.then(( parsed ) => {
-					var toAppend = '';
-					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
-					toAppend += parsed;
-					toAppend += '</div>';
-					resolve( toAppend );
-				})
-				.catch((error) => {
-					throw error;
-					reject();
-				});
+			let url = this.baseDirectory + found.namespace + this.baseExtension;
+			// Let's make the ajax request for the file stored in the page
+			var loadPromise = window.fetch(url, {
+				method: 'get',
+				headers: {
+					'x-rails': 'true'
+				}
 			});
 			// Data are loaded and out animation is performed
 			Promise.all([outPromise, loadPromise])
 			.then((values) => {
-				// Append loaded HTML
-				this.container.innerHTML += values[1];
-				// Set the current view
-				found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
-				// Add the popstate, set active page and start in animation
-				addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
-				this.activePage = found;
-				this.activePage.onEnter();
+				values[1].text().then((parsed) => {
+					var toAppend = '';
+					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
+					toAppend += parsed;
+					toAppend += '</div>';
+					// Append loaded HTML
+					this.container.innerHTML += toAppend;
+					// Set the current view
+					found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
+					// Add the popstate, set active page and start in animation
+					addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
+					this.activePage = found;
+					this.activePage.onEnter();
+				})
+				.catch((error) => {
+					throw error;
+				});
 			})
 			.catch((error) => {
 				throw error;
