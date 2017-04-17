@@ -19,11 +19,11 @@ This object contains two classes, the first one is the rails router and the seco
 So let's setup the router
 
 ```javascript
-rails = new railsjs.Rails();
+const rails = new railsjs.Rails();
 
 // Or you can also pass a configuration object
 const config = {
-	manageAnchors: 	true,
+	manageAnchors: true,
 	managePopState: true,
 	autoClearContainer: true,
 	containerSelector: '#rails-page',
@@ -40,3 +40,44 @@ The configuration object accepts these properties:
 - __containerSelector__: the css selector that indicates the root DOM node for the rails application. This can be a custo div, or the entire body. By the way is always suggested to use a custom div also in a full page rails app case.
 - __baseDirectory__: the directory suffix to add to the routed file for the XHR request. For example if *baseDirectory* is set to his default '/page/' the request for the home route will be '[host]/page/home.[baseExtension]'. Always remember the '/' before and after the *baseDirectory* string
 - __baseExtension__: the default file extension for the XHR request. Always remember the dot before the extension.
+
+After all the setup you need to create a class that extends the RailsPage class. This is manly because your custom page class need to have three important properties: *namespace*, *onEnter*, *onLeave*. The first one indicates the url extensions you'll want to associate this page to, the second and the third are two functions respectivelly called after the HTML has been loaded in the container or the old page is going to be replaced. Mainly the *onLeave* callback is called when the XHR request is prepared and __must__ return a promise resolved when you have done all your stuff, this promise will tell rails when the old DOM code is ready to be replaced, no going back. So the workflow is: get your promise, start a new promise for the XHR request, then when both are resolved, remove the old DOM and append the new one, then call *onEnter*.
+
+```javascript
+class Homepage extends railsjs.RailsPage {
+	constructor() {
+		super();
+		this.namespace = 'homepage';
+	}
+
+	onEnter() {
+		// Perform a simple in animation with GSAP
+		TweenMax.fromTo(this.view, 0.3, {opacity: 0}, {opacity: 1});
+	}
+
+	onLeave() {
+		// Return the promise, resolved at the end of the animation
+		return new Promise((resolve, reject) => {
+			TweenMax.fromTo(this.view, 0.3, {opacity: 1}, {
+				opacity: 0,
+				onComplete: function() {
+					// ... do some other stuff
+					resolve();
+				}
+			});
+		});
+	}
+}
+```
+One you have all your pages, you simply need to call *init* on the rails instance and pass an array with all the pages you need to register. Each page is registered with his reference to his namespace.
+
+```javascript
+const homepage = new Homepage();
+const about = new About();
+rails.init([
+	// Pages list
+	homepage,
+	about,
+	// ...
+]);
+```
