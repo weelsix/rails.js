@@ -7,25 +7,26 @@ class Rails {
 
 		// Proprieties from parameters
 		options = options || { };
-		this.manageAnchors = options.manageAnchors || true;
-		this.contentSelector = options.contentSelector || '#rails-page';
-		this.baseDirectory = options.baseDirectory || '/pages/';
-		this.baseExtension = options.baseExtension || '.html';
-		this.managePopState = options.managePopState || true;
+		this.manageAnchors 		= options.manageAnchors 		|| true;
+		this.managePopState 	= options.managePopState 		|| true;
+		this.autoClearContainer = options.autoClearContainer 	|| true;
+		this.containerSelector 	= options.containerSelector 	|| '#rails-page';
+		this.baseDirectory 		= options.baseDirectory 		|| '/pages/';
+		this.baseExtension 		= options.baseExtension 		|| '.html';
 
 		// Perform all the required tasks in options
 		// or setup variables
-		this.container = document.querySelectorAll( this.contentSelector )[0];
-		if (!this.container) throw 'No valid container';
-		this.manageAnchors && this.handleAnchors();
-		this.managePopState && this.handlePopstate();
+		this.container = document.querySelectorAll( this.containerSelector )[0];
+		if( !this.container ) throw 'No valid container';
+		if( this.manageAnchors ) this.handleAnchors();
+		if( this.managePopState ) this.handlePopstate();
 
 		typeof callback == 'function' && callback();
 	}
 
 	init( paths ) {
 		// Register a path for each path in paths
-		if (typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
+		if( typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
 		paths.forEach((current, index) => {
 			if (typeof current === 'object') this.registerPath( current );
 			else throw 'Unable to register a non-object page';
@@ -71,6 +72,7 @@ class Rails {
 			} else {
 				// If this is the first load there is no active page, promise resolved
 				var outPromise = new Promise((resolve) => { resolve(); });
+				// TODO: check if the returned value is a promise, otherwise throw error
 			}
 			// And we also create a load promise
 			let url = this.baseDirectory + found.namespace + this.baseExtension;
@@ -89,6 +91,8 @@ class Rails {
 					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
 					toAppend += parsed;
 					toAppend += '</div>';
+					// If needed clean the main rails container
+					if( this.autoClearContainer ) this.container.innerHTML = '';
 					// Append loaded HTML
 					this.container.innerHTML += toAppend;
 					// Set the current view
