@@ -118,26 +118,22 @@ class Rails {
 		else this.registered.push( page );
 	}
 
-	handleAnchors() {
+	handleAnchors( context ) {
+		context = context || document;
 		// This will be called every time we put content in the page
-		var anchors = document.querySelectorAll('a');
+		var anchors = context.querySelectorAll('a');
 		for (var i = 0; i < anchors.length; i++) {
 			var anchor = anchors[i];
 			// According to documentation is not necessary to remove
 			// duplicated event listeners
 			// anchor.removeEventListener('click', this.navigate);
-			anchor.addEventListener('click', this.handleMiddleware, false);
+			anchor.addEventListener('click', (event) => { this.handleClick(event); }, false);
 		}
 	}
 
-	// This is necessary not to replacete the listener and pass this to the handle click
-	handleMiddleware(event) {
-		this.handleClick(this, event);
-	}
-
-	handleClick( self, event ) {
+	handleClick( event ) {
 		event.preventDefault();
-		self.go( event.target.href );
+		this.go( event.target.href );
 	}
 
 	handlePopstate() {
