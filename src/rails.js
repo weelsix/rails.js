@@ -126,8 +126,13 @@ class Rails {
 			// According to documentation is not necessary to remove
 			// duplicated event listeners
 			// anchor.removeEventListener('click', this.navigate);
-			anchor.addEventListener('click', (event) => { this.handleClick(this, event); }, false);
+			anchor.addEventListener('click', this.handleMiddleware, false);
 		}
+	}
+
+	// This is necessary not to replacete the listener and pass this to the handle click
+	handleMiddleware(event) {
+		this.handleClick(this, event);
 	}
 
 	handleClick( self, event ) {
