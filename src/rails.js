@@ -7,12 +7,12 @@ class Rails {
 
 		// Proprieties from parameters
 		options = options || { };
-		this.manageAnchors 		= options.manageAnchors 		|| true;
-		this.managePopState 	= options.managePopState 		|| true;
-		this.autoClearContainer = options.autoClearContainer 	|| true;
-		this.containerSelector 	= options.containerSelector 	|| '#rails-page';
-		this.baseDirectory 		= options.baseDirectory 		|| '/pages/';
-		this.baseExtension 		= options.baseExtension 		|| '.html';
+		this.manageAnchors = options.manageAnchors || true;
+		this.managePopState = options.managePopState || true;
+		this.autoClearContainer = options.autoClearContainer || true;
+		this.containerSelector = options.containerSelector || '#rails-page';
+		this.baseDirectory = options.baseDirectory || '/pages/';
+		this.baseExtension = options.baseExtension || '.html';
 
 		// Perform all the required tasks in options
 		// or setup variables
