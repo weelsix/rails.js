@@ -4,6 +4,7 @@ class Rails {
 		this.container = null;
 		this.registered = [];
 		this.activePage = null;
+		this.cache = null;
 
 		// Proprieties from parameters
 		options = options || { };
@@ -13,10 +14,12 @@ class Rails {
 		this.containerSelector = options.containerSelector || '#rails-page';
 		this.baseDirectory = options.baseDirectory || '/pages/';
 		this.baseExtension = options.baseExtension || '.html';
+		this.cacheDuration = options.cacheDuration || 0;
 
 		// Perform all the required tasks in options
 		// or setup variables
 		this.container = document.querySelectorAll( this.containerSelector )[0];
+		this.cache = new RailsCache( this.cacheDuration );
 		if( !this.container ) throw 'No valid container';
 		if( this.manageAnchors ) this.handleAnchors();
 		if( this.managePopState ) this.handlePopstate();
@@ -77,6 +80,7 @@ class Rails {
 			// And we also create a load promise
 			let url = this.baseDirectory + found.namespace + this.baseExtension;
 			// Let's make the ajax request for the file stored in the page
+			// TODO: put cache request here
 			var loadPromise = window.fetch(url, {
 				method: 'get',
 				headers: {
@@ -159,6 +163,69 @@ class RailsPage {
 
 	onLeave() {
 		// Animazione di uscita
+	}
+}
+
+class RailsCache {
+	constructor( duration ) {
+		this.duration = duration || 0;
+		this.cache = [
+			// Main array of objects to store cache entries
+			// { url: '', content: '', timestam: time() }
+		];
+	}
+
+	// TODO: ricordarsi che ritorna una promise che si risolve in stringa
+	getPage( url ) {
+		return new Promise(( resolve, reject ) => {
+			const retrived = this.getEntry( url );
+			if( retrived ) {
+				// Element is in cache and is not expired, resolve the promise with the content in cache
+				resolve( retrived.content );
+			} else {
+				// Element is not in cache or is expired
+				window.fetch(url, {
+					method: 'get',
+					headers: {
+						'x-rails': 'true'
+					}
+				})
+				.then((result) => {
+					result.text().then((parsed) => {
+						this.store({
+							url: url,
+							content: parsed,
+							time: Date.now()
+						});
+						resolve( parsed );
+					});
+				})
+				.catch((error) => {
+					throw error;
+					reject(error);
+				});
+			}
+		});
+	}
+
+	getEntry( url, ignoreExpiration = false ) {
+		// TODO: optimise this loop
+		var found = false;
+		this.cache.forEach((entry) => {
+			if( entry.url == url && (( Date.now() - entry.time ) <= duration) )
+				found = entry;
+		});
+		return found;
+	}
+
+	store( entry ) {
+		var retrived = this.getEntry( entry.url, true );
+		if( retrived ) {
+			// This url is already in cache, update content but not time and url
+			retrived.content = entry.content;
+		} else {
+			this.cache.push(entry);
+		}
 	}
 }
 
