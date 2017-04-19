@@ -204,7 +204,7 @@ class RailsCache {
 				if( entry.url == url )
 					found = entry;
 			} else {
-				if( entry.url == url && (( Date.now() - entry.time ) <= duration) )
+				if( entry.url == url && (( Date.now() - entry.time ) <= this.duration) )
 					found = entry;
 			}
 		}
