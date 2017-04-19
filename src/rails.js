@@ -181,11 +181,14 @@ class RailsCache {
 				})
 				.then((result) => {
 					result.text().then((parsed) => {
-						this.store({
-							url: url,
-							content: parsed,
-							time: Date.now()
-						});
+						// Prevent storing element if cache is disabled
+						if(this.duration > 0) {
+							this.store({
+								url: url,
+								content: parsed,
+								time: Date.now()
+							});
+						}
 						resolve( parsed );
 					});
 				})
