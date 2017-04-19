@@ -86,9 +86,9 @@ rails.init([
 ```
 ## Rails and RailsPage APIs
 
-Inside the *RailsPage* you have access to the some useful properties and methods:
+Inside the *Rails* instance *RailsPage* you have access to the some useful properties and methods:
 - __rails.go( *string* destination )__: force rails router to navigate to a destination.
 - __rails.registerPath( *RailsPage* page )__: add a new page to previously registered collection. From now on this page can be used as a destination.
 - __rails.handleAnchors( *HTMLElement* contex )__: add event listeners to all the *<a>* tags inside the context and bind the click to the internal rails router. Always check you context when you call this method, 'case listeners will be added not removed. *document* is the default context and this method is automatically invoched if manageAnchors is set to true inside the rails constructor.
-- __RailsPage.view__: this property contains the DOM reference to the current page view root HTMLElement. Is automatically filled by rails every time the page is loaded.
-- __RailsPage.namespace__: the namespace associated with the page, can be changed later on, but is not raccomanded.
+- __railsPage.view__: this property contains the DOM reference to the current page view root HTMLElement. Is automatically filled by rails every time the page is loaded.
+- __railsPage.namespace__: the namespace associated with the page, can be changed later on, but is not raccomanded.
