@@ -79,36 +79,26 @@ class Rails {
 			}
 			// And we also create a load promise
 			let url = this.baseDirectory + found.namespace + this.baseExtension;
-			// Let's make the ajax request for the file stored in the page
-			// TODO: put cache request here
-			var loadPromise = window.fetch(url, {
-				method: 'get',
-				headers: {
-					'x-rails': 'true'
-				}
-			});
+			// Let's make the ajax request for the file stored in the page namespace
+			var loadPromise = this.cache.getPage( url );
 			// Data are loaded and out animation is performed
 			Promise.all([outPromise, loadPromise])
 			.then((values) => {
-				values[1].text().then((parsed) => {
-					var toAppend = '';
-					toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
-					toAppend += parsed;
-					toAppend += '</div>';
-					// If needed clean the main rails container
-					if( this.autoClearContainer ) this.container.innerHTML = '';
-					// Append loaded HTML
-					this.container.innerHTML += toAppend;
-					// Set the current view
-					found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
-					// Add the popstate, set active page and start in animation
-					addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
-					this.activePage = found;
-					this.activePage.onEnter();
-				})
-				.catch((error) => {
-					throw error;
-				});
+				var parsed = values[1];
+				var toAppend = '';
+				toAppend += '<div class=\'rails-view\' data-view=\'' + found.namespace + '\'>';
+				toAppend += parsed;
+				toAppend += '</div>';
+				// If needed clean the main rails container
+				if( this.autoClearContainer ) this.container.innerHTML = '';
+				// Append loaded HTML
+				this.container.innerHTML += toAppend;
+				// Set the current view
+				found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
+				// Add the popstate, set active page and start in animation
+				addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
+				this.activePage = found;
+				this.activePage.onEnter();
 			})
 			.catch((error) => {
 				throw error;
@@ -175,7 +165,6 @@ class RailsCache {
 		];
 	}
 
-	// TODO: ricordarsi che ritorna una promise che si risolve in stringa
 	getPage( url ) {
 		return new Promise(( resolve, reject ) => {
 			const retrived = this.getEntry( url );
@@ -201,7 +190,6 @@ class RailsCache {
 					});
 				})
 				.catch((error) => {
-					throw error;
 					reject(error);
 				});
 			}
@@ -209,20 +197,26 @@ class RailsCache {
 	}
 
 	getEntry( url, ignoreExpiration = false ) {
-		// TODO: optimise this loop
 		var found = false;
-		this.cache.forEach((entry) => {
-			if( entry.url == url && (( Date.now() - entry.time ) <= duration) )
-				found = entry;
-		});
+		for (let i = 0; i < this.cache.length && !found; i++) {
+			var entry = this.cache[i];
+			if( ignoreExpiration ) {
+				if( entry.url == url )
+					found = entry;
+			} else {
+				if( entry.url == url && (( Date.now() - entry.time ) <= duration) )
+					found = entry;
+			}
+		}
 		return found;
 	}
 
 	store( entry ) {
 		var retrived = this.getEntry( entry.url, true );
 		if( retrived ) {
-			// This url is already in cache, update content but not time and url
+			// This url is already in cache, update content but not url
 			retrived.content = entry.content;
+			retrived.time = Date.now();
 		} else {
 			this.cache.push(entry);
 		}
