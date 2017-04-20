@@ -95,8 +95,8 @@ class Rails {
 				// Set the current view
 				found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
 				// Setup parameters
-				found.parameters = parameters.match( found.parametersRegexp );
-				found.parametersString = parameters;
+				found.parameters = parameters ? parameters.match( found.parametersRegexp ) : '';
+				found.parametersString = parameters ? parameters : '';
 				// Add the popstate, set active page and start in animation
 				// TODO: probaby here we have to save page + params
 				addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
@@ -170,7 +170,7 @@ class RailsCache {
 			// { url: '', content: '', timestam: time() }
 		];
 		if( this.persistent ) {
-			this.cache = JSON.parse(window.localStorage._railsCache) || [];
+			this.cache = window.localStorage._railsCache ? JSON.parse(window.localStorage._railsCache) : [];
 		}
 	}
 
