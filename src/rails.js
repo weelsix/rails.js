@@ -51,7 +51,7 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		var parts = destination.match(/(http|https)+:\/\/(.+)\/([a-zA-Z]+)\/(.*)/i);
+		var parts = destination.match(/(http|https)+:\/\/(.+)\/([a-zA-Z]+)[\/]?(.*)/i);
 		if( parts ) {
 			// In this case the url contain full uri string
 			var protocol = parts[1];
