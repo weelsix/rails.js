@@ -15,11 +15,12 @@ class Rails {
 		this.baseDirectory = options.baseDirectory || '/pages/';
 		this.baseExtension = options.baseExtension || '.html';
 		this.cacheDuration = options.cacheDuration || 0;
+		this.cacheIsPersistent = options.cacheIsPersistent || false;
 
 		// Perform all the required tasks in options
 		// or setup variables
 		this.container = document.querySelectorAll( this.containerSelector )[0];
-		this.cache = new RailsCache( this.cacheDuration );
+		this.cache = new RailsCache( this.cacheDuration, this.cacheIsPersistent );
 		if( !this.container ) throw 'No valid container';
 		if( this.manageAnchors ) this.handleAnchors();
 		if( this.managePopState ) this.handlePopstate();
@@ -50,19 +51,17 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		var protocol = false;
-		var domain = false;
-		var port = false;
-		var page = false;
-		var parts = destination.match(/(http|https):\/\/(.*):(.*)\/(.*)/i);
+		var parts = destination.match(/(http|https):\/\/(.*)(:(.*))?\/(.*)(\/(.*))?/i);
 		if( parts ) {
 			// In this case the url contain full uri string
-			protocol = parts[1];
-			domain = parts[2];
-			port = parts[3];
-			page = parts[4];
+			var protocol = parts[1];
+			var domain = parts[2];
+			var port = parts[3];
+			var page = parts[4];
+			var parameters = parts[5];
 		} else {
 			// In this case the url probably came from popstate
+			// TODO: handle parameters regex even here
 			page = destination;
 		}
 		// Now let's look for the registered page to load
@@ -95,7 +94,11 @@ class Rails {
 				this.container.innerHTML += toAppend;
 				// Set the current view
 				found.view = document.querySelector('.rails-view[data-view="' + found.namespace + '"]');
+				// Setup parameters
+				found.parameters = parameters.match( found.parametersRegexp );
+				found.parametersString = parameters;
 				// Add the popstate, set active page and start in animation
+				// TODO: probaby here we have to save page + params
 				addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
 				this.activePage = found;
 				this.activePage.onEnter();
@@ -142,9 +145,11 @@ class Rails {
 
 class RailsPage {
 	constructor() {
-		// Empty constructor
 		this.view = null;
 		this.namespace = '';
+		this.parameters = [];
+		this.parametersRegexp = /^(.*)$/gi;
+		this.parametersString = '';
 	}
 
 	onEnter() {
@@ -157,12 +162,16 @@ class RailsPage {
 }
 
 class RailsCache {
-	constructor( duration ) {
+	constructor( duration, persistent ) {
 		this.duration = duration || 0;
+		this.persistent = persistent || false;
 		this.cache = [
 			// Main array of objects to store cache entries
 			// { url: '', content: '', timestam: time() }
 		];
+		if( this.persistent ) {
+			this.cache = JSON.parse(window.localStorage._railsCache) || [];
+		}
 	}
 
 	getPage( url ) {
@@ -223,6 +232,11 @@ class RailsCache {
 		} else {
 			this.cache.push(entry);
 		}
+		if( this.persistent ) this.writeInLocalStorage();
+	}
+
+	writeInLocalStorage() {
+		window.localStorage._railsCache = JSON.stringify(this.cache);
 	}
 }
 
