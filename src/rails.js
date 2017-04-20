@@ -51,14 +51,13 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		var parts = destination.match(/(http|https):\/\/(.*)(:(.*))?\/(.*)(\/(.*))?/i);
+		var parts = destination.match(/(http|https)+:\/\/(.+)\/([a-zA-Z]+)\/(.*)/i);
 		if( parts ) {
 			// In this case the url contain full uri string
 			var protocol = parts[1];
 			var domain = parts[2];
-			var port = parts[3];
-			var page = parts[4];
-			var parameters = parts[5];
+			var page = parts[3];
+			var parameters = parts[4];
 		} else {
 			// In this case the url probably came from popstate
 			// TODO: handle parameters regex even here
@@ -171,6 +170,7 @@ class RailsCache {
 		];
 		if( this.persistent ) {
 			this.cache = window.localStorage._railsCache ? JSON.parse(window.localStorage._railsCache) : [];
+			this.writeInLocalStorage();
 		}
 	}
 
