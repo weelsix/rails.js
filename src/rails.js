@@ -98,7 +98,7 @@ class Rails {
 				found.parametersString = parameters ? parameters : '';
 				// Add the popstate, set active page and start in animation
 				// TODO: probaby here we have to save page + params
-				addState && window.history.pushState({ location: page }, page.toUpperCase(), page);
+				addState && window.history.pushState({ location: page }, page.toUpperCase(), page + '/' + parameters);
 				this.activePage = found;
 				this.activePage.onEnter();
 			})
