@@ -5,6 +5,8 @@ class Rails {
 		this.registered = [];
 		this.activePage = null;
 		this.cache = null;
+		// Private url regexp for splitting
+		this._urlRegexp = /(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i;
 
 		// Proprieties from parameters
 		options = options || { };
@@ -36,9 +38,9 @@ class Rails {
 			else throw 'Unable to register a non-object page';
 		} );
 		// Then navigate to the setted url location when called init, if none navigate to the first registered
-		var parts = document.location.href.match(/(http|https):\/\/(.*):(.*)\/(.*)/i);
-		if( typeof parts[4] !== 'undefined' && parts[4].length > 1 ) {
-			this.go( parts[4] );
+		var parts = document.location.href.match( this._urlRegexp );
+		if( typeof parts[3] !== 'undefined' && parts[3].length > 1 ) {
+			this.go( parts[3] );
 		} else {
 			this.go( paths[0].namespace );
 		}
@@ -51,7 +53,9 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		var parts = destination.match(/(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i);
+		console.log("Going to");
+		console.log(destination);
+		var parts = destination.match( this._urlRegexp );
 		if( parts ) {
 			// In this case the url contain full uri string
 			var protocol = parts[1];
@@ -225,6 +229,29 @@ class RailsCache {
 			}
 		}
 		return found;
+	}
+
+	prefetch( url ) {
+		window.fetch(url, {
+			method: 'get',
+			headers: {
+				'x-rails': 'true'
+			}
+		})
+		.then((result) => {
+			result.text().then((parsed) => {
+				if(this.duration > 0) {
+					this.store({
+						url: url,
+						content: parsed,
+						time: Date.now()
+					});
+				}
+			});
+		})
+		.catch((error) => {
+			throw error;
+		});
 	}
 
 	store( entry ) {
