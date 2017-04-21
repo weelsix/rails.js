@@ -39,7 +39,7 @@ class Rails {
 		} );
 		// Then navigate to the setted url location when called init, if none navigate to the first registered
 		var parts = document.location.href.match( this._urlRegexp );
-		if( typeof parts[3] !== 'undefined' && parts[3].length > 1 ) {
+		if( parts ) {
 			this.go( parts[3] );
 		} else {
 			this.go( paths[0].namespace );
