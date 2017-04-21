@@ -53,8 +53,6 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		console.log("Going to");
-		console.log(destination);
 		var parts = destination.match( this._urlRegexp );
 		if( parts ) {
 			// In this case the url contain full uri string
