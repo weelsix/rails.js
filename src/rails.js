@@ -41,9 +41,13 @@ class Rails {
 		console.log("Tryng to match");
 		console.log(document.location.href);
 		var parts = document.location.href.match( this._urlRegexp );
+		console.log(parts);
 		if( parts ) {
+			console.log("Found parts di 3");
+			console.log(parts[3]);
 			this.go( parts[3] );
 		} else {
+			console.log("Trovato niente vado a home");
 			this.go( paths[0].namespace );
 		}
 	}
