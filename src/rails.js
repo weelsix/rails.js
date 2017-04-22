@@ -41,8 +41,7 @@ class Rails {
 		if( document.location.href[document.location.href.length - 1] == '/' ) {
 			this.go( paths[0].namespace );
 		} else {
-			var parts = document.location.href.match( this._urlRegexp );
-			this.go( parts[3] );
+			this.go( document.location.href );
 		}
 	}
 
