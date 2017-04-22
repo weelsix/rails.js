@@ -38,17 +38,11 @@ class Rails {
 			else throw 'Unable to register a non-object page';
 		} );
 		// Then navigate to the setted url location when called init, if none navigate to the first registered
-		console.log("Tryng to match");
-		console.log(document.location.href);
-		var parts = document.location.href.match( this._urlRegexp );
-		console.log(parts);
-		if( parts ) {
-			console.log("Found parts di 3");
-			console.log(parts[3]);
-			this.go( parts[3] );
-		} else {
-			console.log("Trovato niente vado a home");
+		if( document.location.href[document.location.href.length - 1] == '/' ) {
 			this.go( paths[0].namespace );
+		} else {
+			var parts = document.location.href.match( this._urlRegexp );
+			this.go( parts[3] );
 		}
 	}
 
@@ -62,8 +56,8 @@ class Rails {
 		var parts = destination.match( this._urlRegexp );
 		if( parts ) {
 			// In this case the url contain full uri string
-			var protocol = parts[1];
-			var domain = parts[2];
+			// var protocol = parts[1];
+			// var domain = parts[2];
 			var page = parts[3];
 			var parameters = parts[4];
 		} else {
