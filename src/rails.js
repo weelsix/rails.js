@@ -38,6 +38,8 @@ class Rails {
 			else throw 'Unable to register a non-object page';
 		} );
 		// Then navigate to the setted url location when called init, if none navigate to the first registered
+		console.log("Tryng to match");
+		console.log(document.location.href);
 		var parts = document.location.href.match( this._urlRegexp );
 		if( parts ) {
 			this.go( parts[3] );
@@ -62,7 +64,6 @@ class Rails {
 			var parameters = parts[4];
 		} else {
 			// In this case the url probably came from popstate
-			// TODO: handle parameters regex even here
 			page = destination;
 		}
 		// Now let's look for the registered page to load
