@@ -98,9 +98,9 @@ class Rails {
 				found.parametersString = parameters ? parameters : '';
 				// Add the popstate, set active page and start in animation
 				addState && window.history.pushState(
-					{ location: page },
+					{ location: page + (parameters ? ('/' + parameters) : '') },
 					page.toUpperCase(),
-					'/' + page + (parameters ? ('/' + parameters) : '')
+					'./' + page + (parameters ? ('/' + parameters) : '')
 				);
 				this.activePage = found;
 				this.activePage.onEnter();

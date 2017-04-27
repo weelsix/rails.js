@@ -1,6 +1,6 @@
 {
   "name": "rails-js",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "An easy to use, indipendent, home-made javascript utility library to route your single page application.",
   "main": "./src/rails.js",
   "scripts": {
