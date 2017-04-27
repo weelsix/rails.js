@@ -6,6 +6,7 @@ class Rails {
 		this.activePage = null;
 		this.cache = null;
 		// Private url regexp for splitting
+		this._urlBase = '';
 		this._urlRegexp = /(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i;
 
 		// Proprieties from parameters
@@ -31,6 +32,7 @@ class Rails {
 	}
 
 	init( paths ) {
+		this._urlBase = document.location.href.match(this._urlRegexp)[1] + '/';
 		// Register a path for each path in paths
 		if( typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
 		paths.forEach((current, index) => {
@@ -100,7 +102,7 @@ class Rails {
 				addState && window.history.pushState(
 					{ location: page + (parameters ? ('/' + parameters) : '') },
 					page.toUpperCase(),
-					page + (parameters ? ('/' + parameters) : '')
+					this._urlBase + page + (parameters ? ('/' + parameters) : '')
 				);
 				this.activePage = found;
 				this.activePage.onEnter();
