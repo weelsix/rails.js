@@ -100,7 +100,7 @@ class Rails {
 				addState && window.history.pushState(
 					{ location: page + (parameters ? ('/' + parameters) : '') },
 					page.toUpperCase(),
-					'./' + page + (parameters ? ('/' + parameters) : '')
+					page + (parameters ? ('/' + parameters) : '')
 				);
 				this.activePage = found;
 				this.activePage.onEnter();
