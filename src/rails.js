@@ -32,7 +32,7 @@ class Rails {
 	}
 
 	init( paths ) {
-		this._urlBase = document.location.href.match(this._urlRegexp)[1] + '/';
+		this._urlBase = document.location.href.match(this._urlRegexp)[2] + '/';
 		// Register a path for each path in paths
 		if( typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
 		paths.forEach((current, index) => {
