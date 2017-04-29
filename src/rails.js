@@ -32,7 +32,7 @@ class Rails {
 	}
 
 	init( paths, origin ) {
-		if( origin && origin.length > 1 && origin.match(/[http|https]\:\/\/[a-zA-z0-9:]\//gi) ) {
+		if( origin && origin.length > 1 && origin.match(/(http|https)\:\/\/([a-zA-z0-9:]+)\//gi) ) {
 			this.urlBase = origin;
 		} else {
 			throw 'Origin must match a correct url pattern';
