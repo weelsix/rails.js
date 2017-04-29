@@ -32,7 +32,11 @@ class Rails {
 	}
 
 	init( paths, origin ) {
-		this.urlBase = origin;
+		if( origin && origin.length > 1 && origin.match(/[http|https]\:\/\/[a-zA-z0-9:]\//gi) ) {
+			this.urlBase = origin;
+		} else {
+			throw 'Origin must match a correct url pattern';
+		}
 		// Register a path for each path in paths
 		if( typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
 		paths.forEach((current, index) => {
