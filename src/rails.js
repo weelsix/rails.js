@@ -3,10 +3,10 @@ class Rails {
 		// Native proprieties
 		this.container = null;
 		this.registered = [];
+		this.urlBase = '';
 		this.activePage = null;
 		this.cache = null;
 		// Private url regexp for splitting
-		this._urlBase = '';
 		this._urlRegexp = /(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i;
 
 		// Proprieties from parameters
@@ -31,9 +31,8 @@ class Rails {
 		typeof callback == 'function' && callback();
 	}
 
-	init( paths ) {
-		var parts = document.location.href.match(this._urlRegexp);
-		this._urlBase = parts[1] + '://' + parts[2] + '/';
+	init( paths, origin ) {
+		this.urlBase = origin;
 		// Register a path for each path in paths
 		if( typeof paths !== 'object' || paths.length < 0 ) throw 'Expected Array as paths list';
 		paths.forEach((current, index) => {
@@ -102,10 +101,11 @@ class Rails {
 				// Add the popstate, set active page and start in animation
 				addState && window.history.pushState(
 					{ location: page + (parameters ? ('/' + parameters) : '') },
-					page.toUpperCase(),
-					this._urlBase + page + (parameters ? ('/' + parameters) : '')
+					found.title,
+					this.urlBase + page + (parameters ? ('/' + parameters) : '')
 				);
 				this.activePage = found;
+				document.title = this.activePage.title;
 				this.activePage.onEnter();
 			})
 			.catch((error) => {
@@ -152,6 +152,7 @@ class RailsPage {
 	constructor() {
 		this.view = null;
 		this.namespace = '';
+		this.title = '';
 		this.parameters = [];
 		this.parametersRegexp = /^(.*)$/gi;
 		this.parametersString = '';
