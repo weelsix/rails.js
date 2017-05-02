@@ -1,13 +1,11 @@
 class Rails {
 	constructor( options, callback ) {
-		// Native proprieties
+		// Setting up proprieties
 		this.container = null;
 		this.registered = [];
 		this.urlBase = '';
 		this.activePage = null;
 		this.cache = null;
-		// Private url regexp for splitting
-		this._urlRegexp = /(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i;
 
 		// Proprieties from parameters
 		options = options || { };
@@ -32,7 +30,7 @@ class Rails {
 	}
 
 	init( paths, origin ) {
-		if( origin && origin.length > 1 && origin.match(/(http|https)\:\/\/([a-zA-z0-9:]+)\//gi) ) {
+		if( origin && origin.length > 1 && origin.match(/^(http|https)\:\/\/([a-zA-z0-9:]+)\/$/gi) ) {
 			this.urlBase = origin;
 		} else {
 			throw 'Origin must match a correct url pattern';
@@ -58,7 +56,7 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		var parts = destination.match( this._urlRegexp );
+		var parts = destination.match(/(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i);
 		if( parts ) {
 			// In this case the url contain full uri string
 			// var protocol = parts[1];
@@ -76,10 +74,11 @@ class Rails {
 			// The onleave method must return a promise resolved on animation complete
 			if( this.activePage ) {
 				var outPromise = this.activePage.onLeave();
+				if (typeof outPromise.then != 'function')
+					throw 'onLeave function must return a then-able oject, like a Promise or a polyfill';
 			} else {
 				// If this is the first load there is no active page, promise resolved
 				var outPromise = new Promise((resolve) => { resolve(); });
-				// TODO: check if the returned value is a promise, otherwise throw error
 			}
 			// And we also create a load promise
 			let url = this.baseDirectory + found.namespace + this.baseExtension;
