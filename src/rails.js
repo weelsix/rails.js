@@ -24,13 +24,13 @@ class Rails {
 		this.cache = new RailsCache( this.cacheDuration, this.cacheIsPersistent );
 		if( !this.container ) throw 'No valid container';
 		if( this.manageAnchors ) this.handleAnchors();
-		if( this.managePopState ) this.handlePopstate();
+		if( this.managePopState ) this._handlePopstate();
 
 		typeof callback == 'function' && callback();
 	}
 
 	init( paths, origin ) {
-		if( origin && origin.length > 1 && origin.match(/^(http|https)\:\/\/([a-zA-z0-9:]+)\/$/gi) ) {
+		if( origin && origin.length > 1 && origin.match(/^(http|https)\:\/\/([a-zA-z0-9:]+)\/$/i) ) {
 			this.urlBase = origin;
 		} else {
 			throw 'Origin must match a correct url pattern';
@@ -56,17 +56,9 @@ class Rails {
 		// This is the core, go will hadle all the history stuff,
 		// is the function called anytime you need railst to handle
 		// an url change
-		var parts = destination.match(/(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i);
-		if( parts ) {
-			// In this case the url contain full uri string
-			// var protocol = parts[1];
-			// var domain = parts[2];
-			var page = parts[3];
-			var parameters = parts[4];
-		} else {
-			// In this case the url probably came from popstate
-			page = destination;
-		}
+		var parsed = this._parseUrl( destination );
+		var page = parsed.page;
+		var parameters = parsed.parameters;
 		// Now let's look for the registered page to load
 		var found = false;
 		this.registered.forEach( element => { if( element.namespace == page ) found = element; } );
@@ -74,8 +66,9 @@ class Rails {
 			// The onleave method must return a promise resolved on animation complete
 			if( this.activePage ) {
 				var outPromise = this.activePage.onLeave();
-				if (typeof outPromise.then != 'function')
+				if (typeof outPromise.then != 'function') {
 					throw 'onLeave function must return a then-able oject, like a Promise or a polyfill';
+				}
 			} else {
 				// If this is the first load there is no active page, promise resolved
 				var outPromise = new Promise((resolve) => { resolve(); });
@@ -132,16 +125,41 @@ class Rails {
 			// According to documentation is not necessary to remove
 			// duplicated event listeners
 			// anchor.removeEventListener('click', this.navigate);
-			anchor.addEventListener('click', (event) => { this.handleClick(event); }, false);
+			anchor.addEventListener('click', (event) => { this._handleClick(event); }, false);
 		}
 	}
 
-	handleClick( event ) {
+	_parseUrl( url ) {
+		let parsed = {
+			page: '',
+			parameters: ''
+		};
+		if( url.indexOf('http') >= 0 || url.indexOf('https') >= 0 ) {
+			// Assuming thath url is absolute, with protocol and host
+			if( url.indexOf(this.urlBase) >= 0 ) {
+				// Is absolute but with the base url
+				let parts = url.match(/(http|https)+:\/\/([a-zA-Z:0-9\.]+)\/([a-zA-Z]+)[\/]?(.*)/i);
+				parsed.page = parts[3];
+				parsed.parameters = parts[4];
+			} else {
+				// Is absolute but from enother origin
+				window.open( url );
+			}
+		} else {
+			// Assuming that url is relative to the document origin (urlBase)
+			let parts = url.match(/([a-zA-Z]+)[\/]?(.*)/i);
+			parsed.page = parts[1];
+			parsed.parameters = parts[2];
+		}
+		return parsed;
+	}
+
+	_handleClick( event ) {
 		event.preventDefault();
 		this.go( event.target.href );
 	}
 
-	handlePopstate() {
+	_handlePopstate() {
 		window.onpopstate = (event) => {
 			// If state is not set, this entry is not handled by rails,
 			// so let's do nothing and go to the first registered path
@@ -157,7 +175,7 @@ class RailsPage {
 		this.namespace = '';
 		this.title = '';
 		this.parameters = [];
-		this.parametersRegexp = /^(.*)$/gi;
+		this.parametersRegexp = /^(.*)$/i;
 		this.parametersString = '';
 	}
 
