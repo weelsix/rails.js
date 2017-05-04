@@ -1,10 +1,13 @@
 {
   "name": "rails-js",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "An easy to use, indipendent, home-made javascript utility library to route your single page application.",
-  "main": "./src/rails.js",
+  "main": "./dist/rails.js",
+  "module": "./src/rails.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "WEBPACK_ENV=build webpack --progress --colors",
+	"prod": "WEBPACK_ENV=prod webpack -p --progress --colors"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,11 @@
     "url": "https://github.com/borradaniele/rails.js/issues"
   },
   "homepage": "https://github.com/borradaniele/rails.js#readme",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.4.0",
+    "webpack": "^2.5.0"
+  },
   "dependencies": {}
 }
