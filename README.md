@@ -8,7 +8,7 @@ $ npm install rails-js --save
 ```
 *Otherwise you can clone this repo, or also grab the raw file from the source folder*
 
-__BE CAREFUL: Rails uses modern web techlogies such as *fetch API* and *Promises* so if you are planning to support old browsers in your project make sure to use necessary polyfils. And last but not least for now Rails is distributed as a module, it respect CommonJS export and you can import it with CommonJS import or ES6 import but if you're not using a bundling system (like webpack or browserify) you'll need one, or you have to use the transpiled version of the library (inside the *dist* folder, you can find the babel-es2015-preset transpilation, full or minified). In this case you cannot take advantage from the extendable class system, but your page objects must contain all the necessary properites and methods, even tho you can still use the *RailsPage* object as a prototype.__
+__BECAREFUL: Rails uses modern web techlogies such as *fetch API* and *Promises* so if you are planning to support old browsers in your project make sure to use necessary polyfils. And last but not least for now Rails is distributed as a module, it respect CommonJS export and you can import it with CommonJS import or ES6 import but if you're not using a bundling system (like webpack or browserify) you'll need one, or you have to use the transpiled version of the library (inside the *dist* folder, you can find the babel-es2015-preset transpilation, full or minified). In this case you cannot take advantage from the extendable class system, but your page objects must contain all the necessary properites and methods, even tho you can still use the *RailsPage* object as a prototype.__
 
 Once done import the main rails object like this
 
@@ -31,7 +31,9 @@ const config = {
 	autoClearContainer: true,
 	containerSelector: '#rails-page',
 	baseDirectory: '/pages/',
-	baseExtension: '.html'
+	baseExtension: '.html',
+	cacheDuration: 0,
+	cacheIsPersistent: false
 };
 const rails = new railsjs.Rails( config );
 ```
@@ -43,6 +45,8 @@ The configuration object accepts these properties:
 - __containerSelector__: the css selector that indicates the root DOM node for the rails application. This can be a custo div, or the entire body. By the way is always suggested to use a custom div also in a full page rails app case.
 - __baseDirectory__: the directory suffix to add to the routed file for the XHR request. For example if *baseDirectory* is set to his default '/page/' the request for the home route will be '[host]/page/home.[baseExtension]'. Always remember the '/' before and after the *baseDirectory* string
 - __baseExtension__: the default file extension for the XHR request. Always remember the dot before the extension.
+- __cacheDuration__: indicates how long __in milliseconds__ cache entries will be considered valid. If this is set to 0, cache will be disabled (preventing Rails from storing all the fetch request at all). If a cache entry is valid this will be used to populate the container without doing any network request, this will also prevent your service worker from serving the page, so if you are planning to use a caching system with service workers, be aware.
+- __cacheIsPersistent__: If this is set to true, cache will be sotred in your page local storage and will persist among page navigation, browser closing and reloading.
 
 After all the setup you need to create a class that extends the RailsPage class. This is manly because your custom page class need to have three important properties: *namespace*, *onEnter*, *onLeave*. The first one indicates the url extensions you'll want to associate this page to, the second and the third are two functions respectivelly called after the HTML has been loaded in the container or the old page is going to be replaced. Mainly the *onLeave* callback is called when the XHR request is prepared and __must__ return a promise resolved when you have done all your stuff, this promise will tell rails when the old DOM code is ready to be replaced, no going back. So the workflow is: get your promise, start a new promise for the XHR request, then when both are resolved, remove the old DOM and append the new one, then call *onEnter*.
 
