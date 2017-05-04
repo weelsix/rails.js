@@ -1,8 +1,8 @@
 {
   "name": "rails-js",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "An easy to use, indipendent, home-made javascript utility library to route your single page application.",
-  "main": "./dist/rails.js",
+  "main": "./src/rails.js",
   "module": "./src/rails.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
