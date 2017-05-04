@@ -8,7 +8,7 @@ $ npm install rails-js --save
 ```
 *Otherwise you can clone this repo, or also grab the raw file from the source folder*
 
-__BE CAREFUL: Rails uses modern web techlogies such as *fetch API* and *Promises* so if you are planning to support old browsers in your project make sure to use necessary polyfils. And last but not least for now Rails is distributed as a module, it respect CommonJS export and you can import it with CommonJS import or ES6 import but if you're not using a bundling system (like webpack or browserify) you'll need one, or you have to change the source code to be able to use Rails classes. We're planning to create a classic JS object with precompiled source anyway.__
+__BE CAREFUL: Rails uses modern web techlogies such as *fetch API* and *Promises* so if you are planning to support old browsers in your project make sure to use necessary polyfils. And last but not least for now Rails is distributed as a module, it respect CommonJS export and you can import it with CommonJS import or ES6 import but if you're not using a bundling system (like webpack or browserify) you'll need one, or you have to use the transpiled version of the library (inside the *dist* folder, you can find the babel-es2015-preset transpilation, full or minified). In this case you cannot take advantage from the extendable class system, but your page objects must contain all the necessary properites and methods, even tho you can still use the *RailsPage* object as a prototype.__
 
 Once done import the main rails object like this
 
