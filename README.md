@@ -2,13 +2,13 @@
 An easy to use, indipendent, home-made javascript utility library to route your single page application.
 
 ## How to use Rails
-First you simply need to install Rails with npm, as always do:
+First you simply need to install Rails with npm, by doing:
 ```
 $ npm install rails-js --save
 ```
 *Otherwise you can clone this repo, or also grab the unminified or minified version of the umd from the dist folder*
 
-__BECAREFUL: Rails uses modern web techlogies such as *fetch API* and *Promises* so if you are planning to support old browsers in your project make sure to use necessary polyfils. And last but not least for now Rails is distributed primarly as a module, it respect commonJS exports and you can import it with commonJS imports or ES6 imports but if you're not using a bundling system (like webpack or browserify) you'll need one, or you have to use the umd version of the library (inside the *dist* folder, you can find the babel-es2015-preset transpilation, full or minified). In this case you cannot take advantage from the extendable class system, but your page objects must contain all the necessary properites and methods, even tho you can still use the *RailsPage* object as a prototype.__
+__BE CAREFUL: Rails uses modern web technologies such as *fetch API* and *Promises* so if you are planning to support old browsers in your project make sure to use necessary polyfils. Last but not least for now Rails is distributed primarly as a module, it respect commonJS exports and you can import it with commonJS imports or ES6 imports but if you're not using a bundling system (like webpack or browserify) you'll need one, or you have to use the umd version of the library (inside the *dist* folder, you can find the babel-es2015-preset transpilation, full or minified). In this case you cannot take advantage from the extendable class system, but your page objects must contain all the necessary properties and methods, even tho you can still use the *RailsPage* object as a prototype.__
 
 Once done, just import the main rails object like this
 
@@ -18,7 +18,7 @@ import railsjs from 'rails-js';
 
 This object contains two classes, the first one is the rails router and the second one is the extendable one for the rails page you'll have to provide to the router.
 
-So let's setup the router
+Let's setup the router
 
 ```javascript
 const rails = new railsjs.Rails();
@@ -48,7 +48,7 @@ The configuration object accepts these properties:
 - __cacheDuration__: indicates how long __in milliseconds__ cache entries will be considered valid. If this is set to 0, cache will be disabled (preventing Rails from storing all the fetch request at all). If a cache entry is valid this will be used to populate the container without doing any network request, this will also prevent your service worker from serving the page, so if you are planning to use a caching system with service workers, be aware.
 - __cacheIsPersistent__: If this is set to true, cache will be sotred in your page local storage and will persist among page navigation, browser closing and reloading.
 
-After all the setup you need to create a class that extends the RailsPage class. This is manly because your custom page class need to have three important properties: *namespace*, *onEnter*, *onLeave*. The first one indicates the url extensions you'll want to associate this page to, the second and the third are two functions respectivelly called after the HTML has been loaded in the container or the old page is going to be replaced. Mainly the *onLeave* callback is called when the XHR request is prepared and __must__ return a promise resolved when you have done all your stuff, this promise will tell rails when the old DOM code is ready to be replaced, no going back. So the workflow is: get your promise, start a new promise for the XHR request, then when both are resolved, remove the old DOM and append the new one, then call *onEnter*.
+After all the setup you need to create a class that extends the RailsPage class. This is mainly because your custom page class need to have three important properties: *namespace*, *onEnter*, *onLeave*. The first one indicates the url extensions you'll want to associate this page to, the second and the third are two functions respectively called after the HTML has been loaded in the container or the old page has been replaced. Mainly the *onLeave* callback is called when the XHR request is prepared and __must__ return a promise resolved when  all your stuff is done. This promise will tell rails when the old DOM code is ready to be replaced and there is no going back. Therefore the workflow is the following: get your promise, start a new promise for the XHR request, then when both are resolved, remove the old DOM and append the new one, then call *onEnter*.
 
 ```javascript
 class Homepage extends railsjs.RailsPage {
@@ -76,7 +76,7 @@ class Homepage extends railsjs.RailsPage {
 	}
 }
 ```
-One you have all your pages, you simply need to call *init* on the rails instance and pass an array with all the pages you need to register. Each page is registered with his reference to his namespace.
+One you have all your pages, you simply need to call *init* on the rails instance and pass an array with all the pages you need to register. Each page is registered with the reference to its namespace.
 
 ```javascript
 const homepage = new Homepage();
